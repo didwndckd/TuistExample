@@ -6,71 +6,79 @@ import ProjectDescription
 /// See https://docs.tuist.io/guides/helpers/
 
 extension Project {
-    /// Helper function to create the Project for this ExampleApp
-    public static func app(name: String, platform: Platform, additionalTargets: [String]) -> Project {
-        var targets = makeAppTargets(name: name,
-                                     platform: platform,
-                                     dependencies: additionalTargets.map { TargetDependency.target(name: $0) })
-        targets += additionalTargets.flatMap({ makeFrameworkTargets(name: $0, platform: platform) })
-        return Project(name: name,
-                       organizationName: "tuist.io",
-                       targets: targets)
-    }
-
-    // MARK: - Private
-
-    /// Helper function to create a framework target and an associated unit test target
-    private static func makeFrameworkTargets(name: String, platform: Platform) -> [Target] {
-        let sources = Target(name: name,
-                platform: platform,
-                product: .framework,
-                bundleId: "io.tuist.\(name)",
-                infoPlist: .default,
-                sources: ["Targets/\(name)/Sources/**"],
-                resources: [],
-                dependencies: [])
-        let tests = Target(name: "\(name)Tests",
-                platform: platform,
-                product: .unitTests,
-                bundleId: "io.tuist.\(name)Tests",
-                infoPlist: .default,
-                sources: ["Targets/\(name)/Tests/**"],
-                resources: [],
-                dependencies: [.target(name: name)])
-        return [sources, tests]
-    }
-
-    /// Helper function to create the application target and the unit test target.
-    private static func makeAppTargets(name: String, platform: Platform, dependencies: [TargetDependency]) -> [Target] {
-        let platform: Platform = platform
-        let infoPlist: [String: InfoPlist.Value] = [
-            "CFBundleShortVersionString": "1.0",
-            "CFBundleVersion": "1",
-            "UIMainStoryboardFile": "",
-            "UILaunchStoryboardName": "LaunchScreen"
-            ]
-
-        let mainTarget = Target(
-            name: name,
-            platform: platform,
-            product: .app,
-            bundleId: "io.tuist.\(name)",
-            infoPlist: .extendingDefault(with: infoPlist),
-            sources: ["Targets/\(name)/Sources/**"],
-            resources: ["Targets/\(name)/Resources/**"],
-            dependencies: dependencies
+    public static func makeModule(
+        name: String,
+        platform: Platform = .iOS,
+        product: Product,
+        organizationName: String = "com.didwndckd",
+        packages: [Package] = [],
+        deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
+        dependencies: [TargetDependency] = [],
+        sources: SourceFilesList = ["Sources/**"],
+        resources: ResourceFileElements? = nil,
+        infoPlist: InfoPlist = .default
+    ) -> Project {
+        // 프로젝트 세팅
+        let settings = Settings.settings(
+            base: [:], // Build Settings
+            configurations: [ // Configurations
+                .debug(name: .debug),
+                .release(name: .release)
+            ],
+            defaultSettings: .recommended
         )
-
+        
+        let productTarget = Target(
+            name: name, // 타겟 이름
+            platform: platform, // 플랫폼(iOS, MacOS...)
+            product: product, // app, framework, staticLibrary...
+            bundleId: "\(organizationName).\(name)", // 번들 아이디
+            deploymentTarget: deploymentTarget,
+            infoPlist: infoPlist,
+            sources: sources, // 소스 경로
+            resources: resources, // 리소스 경로
+            dependencies: dependencies // 의존성
+        )
+        
         let testTarget = Target(
             name: "\(name)Tests",
             platform: platform,
             product: .unitTests,
-            bundleId: "io.tuist.\(name)Tests",
+            bundleId: "\(organizationName).\(name)Tests",
+            deploymentTarget: deploymentTarget,
             infoPlist: .default,
-            sources: ["Targets/\(name)/Tests/**"],
-            dependencies: [
-                .target(name: "\(name)")
-        ])
-        return [mainTarget, testTarget]
+            sources: ["Tests/**"],
+            dependencies: [.target(name: name)]
+        )
+        
+        let schemes: [Scheme] = [.makeScheme(target: .debug, name: name)]
+        
+        return Project(
+            name: name,
+            organizationName: organizationName,
+            packages: packages,
+            settings: settings,
+            targets: [productTarget, testTarget],
+            schemes: schemes
+        )
+    }
+}
+
+extension Scheme {
+    static func makeScheme(target: ConfigurationName, name: String) -> Scheme {
+        return Scheme(
+            name: name,
+            shared: true,
+            buildAction: .buildAction(targets: ["\(name)"]),
+            testAction: .targets(
+                ["\(name)Test"],
+                configuration: target,
+                options: .options(coverage: true, codeCoverageTargets: ["\(name)"])
+            ),
+            runAction: .runAction(configuration: target),
+            archiveAction: .archiveAction(configuration: target),
+            profileAction: .profileAction(configuration: target),
+            analyzeAction: .analyzeAction(configuration: target)
+        )
     }
 }
