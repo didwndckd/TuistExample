@@ -8,7 +8,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeModule(
+let project = Project.createCleanArchitecture(
     name: "Home",
     product: .staticFramework,
     resources: ["Resources/**"]

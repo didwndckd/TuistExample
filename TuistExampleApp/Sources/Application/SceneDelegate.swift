@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Home
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -21,7 +20,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         self.window = window
         
-        Home.hello()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {}

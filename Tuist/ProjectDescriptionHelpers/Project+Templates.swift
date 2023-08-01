@@ -6,7 +6,7 @@ import ProjectDescription
 /// See https://docs.tuist.io/guides/helpers/
 
 extension Project {
-    public static func makeModule(
+    public static func create(
         name: String,
         platform: Platform = .iOS,
         product: Product,
@@ -28,6 +28,121 @@ extension Project {
             defaultSettings: .recommended
         )
         
+        let target = Target.createWithTests(
+            name: name,
+            platform: platform,
+            product: product,
+            organizationName: organizationName,
+            deploymentTarget: deploymentTarget,
+            dependencies: dependencies,
+            sources: sources,
+            resources: resources,
+            infoPlist: infoPlist
+            )
+        
+        let schemes: [Scheme] = [.makeScheme(target: .debug, name: name)]
+        
+        return Project(
+            name: name,
+            organizationName: organizationName,
+            packages: packages,
+            settings: settings,
+            targets: target.targets,
+            schemes: schemes
+        )
+    }
+    
+    public static func createCleanArchitecture(
+        name: String,
+        platform: Platform = .iOS,
+        product: Product,
+        organizationName: String = "com.didwndckd",
+        packages: [Package] = [],
+        deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
+        dependencies: [TargetDependency] = [],
+        resources: ResourceFileElements? = nil,
+        infoPlist: InfoPlist = .default
+    ) -> Project {
+        let settings = Settings.settings(
+            base: [:],
+            configurations: [
+                .debug(name: .debug),
+                .release(name: .release)
+            ],
+            defaultSettings: .recommended
+        )
+        
+        
+        
+        let domainLayerTarget = Target.createWithTests(name: "\(name)Domain",
+                                                       product: .staticLibrary,
+                                                       organizationName: organizationName,
+                                                       deploymentTarget: deploymentTarget,
+                                                       dependencies: dependencies,
+                                                       sources: ["Domain/**"],
+                                                       resources: nil,
+                                                       infoPlist: infoPlist)
+        
+        let dataLayerTarget = Target.createWithTests(name: "\(name)Data",
+                                                     product: .staticLibrary,
+                                                     organizationName: organizationName,
+                                                     deploymentTarget: deploymentTarget,
+                                                     dependencies: dependencies + [.target(domainLayerTarget.product)],
+                                                     sources: ["Data/**"],
+                                                     resources: nil,
+                                                     infoPlist: infoPlist)
+        
+        let presentationLayerTarget = Target.createWithTests(name: "\(name)Presentation",
+                                                             product: .staticLibrary,
+                                                             organizationName: organizationName,
+                                                             deploymentTarget: deploymentTarget,
+                                                             dependencies: dependencies + [.target(domainLayerTarget.product)] + [.target(dataLayerTarget.product)],
+                                                             sources: ["Presentation/**"],
+                                                             resources: resources,
+                                                             infoPlist: infoPlist)
+        
+        let productTarget = Target.createWithTests(name: name,
+                                                   product: product,
+                                                   organizationName: organizationName,
+                                                   deploymentTarget: deploymentTarget,
+                                                   dependencies: dependencies + [.target(presentationLayerTarget.product), .target(domainLayerTarget.product), .target(dataLayerTarget.product)],
+                                                   sources: nil,
+                                                   resources: nil,
+                                                   infoPlist: infoPlist)
+        
+        let targets = productTarget.targets + domainLayerTarget.targets + dataLayerTarget.targets + presentationLayerTarget.targets
+        
+        return Project(
+            name: name,
+            organizationName: organizationName,
+            packages: packages,
+            settings: settings,
+            targets: targets,
+            schemes: []
+        )
+    }
+}
+
+struct TargetWithTest {
+    let product: Target
+    let test: Target
+    var targets: [Target] {
+        return [product, test]
+    }
+}
+
+extension Target {
+    static func createWithTests(
+        name: String,
+        platform: Platform = .iOS,
+        product: Product,
+        organizationName: String,
+        deploymentTarget: DeploymentTarget?,
+        dependencies: [TargetDependency],
+        sources: SourceFilesList?,
+        resources: ResourceFileElements?,
+        infoPlist: InfoPlist
+    ) -> TargetWithTest {
         let productTarget = Target(
             name: name, // 타겟 이름
             platform: platform, // 플랫폼(iOS, MacOS...)
@@ -35,8 +150,8 @@ extension Project {
             bundleId: "\(organizationName).\(name)", // 번들 아이디
             deploymentTarget: deploymentTarget,
             infoPlist: infoPlist,
-            sources: sources, // 소스 경로
-            resources: resources, // 리소스 경로
+            sources: sources, // 소스 경로(프로젝트 루트 기반)
+            resources: resources, // 리소스 경로(프로젝트 루트 기반)
             dependencies: dependencies // 의존성
         )
         
@@ -51,16 +166,7 @@ extension Project {
             dependencies: [.target(name: name)]
         )
         
-        let schemes: [Scheme] = [.makeScheme(target: .debug, name: name)]
-        
-        return Project(
-            name: name,
-            organizationName: organizationName,
-            packages: packages,
-            settings: settings,
-            targets: [productTarget, testTarget],
-            schemes: schemes
-        )
+        return TargetWithTest(product: productTarget, test: testTarget)
     }
 }
 
