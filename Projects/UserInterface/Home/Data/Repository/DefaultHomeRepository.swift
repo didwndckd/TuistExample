@@ -6,3 +6,8 @@
 //
 
 import Foundation
+import HomeDomain
+
+public struct DefaultHomeRepository: HomeRepository {
+    public init() {}
+}

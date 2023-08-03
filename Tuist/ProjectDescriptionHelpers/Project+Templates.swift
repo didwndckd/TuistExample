@@ -40,7 +40,7 @@ extension Project {
             infoPlist: infoPlist
             )
         
-        let schemes: [Scheme] = [.makeScheme(target: .debug, name: name)]
+        let schemes: [Scheme] = [.create(target: .debug, name: name)]
         
         return Project(
             name: name,
@@ -55,7 +55,7 @@ extension Project {
     public static func createCleanArchitecture(
         name: String,
         platform: Platform = .iOS,
-        product: Product,
+//        product: Product,
         organizationName: String = "com.didwndckd",
         packages: [Package] = [],
         deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
@@ -72,13 +72,11 @@ extension Project {
             defaultSettings: .recommended
         )
         
-        
-        
         let domainLayerTarget = Target.createWithTests(name: "\(name)Domain",
                                                        product: .staticLibrary,
                                                        organizationName: organizationName,
                                                        deploymentTarget: deploymentTarget,
-                                                       dependencies: dependencies,
+                                                       dependencies: [],
                                                        sources: ["Domain/**"],
                                                        resources: nil,
                                                        infoPlist: infoPlist)
@@ -87,7 +85,7 @@ extension Project {
                                                      product: .staticLibrary,
                                                      organizationName: organizationName,
                                                      deploymentTarget: deploymentTarget,
-                                                     dependencies: dependencies + [.target(domainLayerTarget.product)],
+                                                     dependencies: [.target(domainLayerTarget.product)],
                                                      sources: ["Data/**"],
                                                      resources: nil,
                                                      infoPlist: infoPlist)
@@ -96,21 +94,23 @@ extension Project {
                                                              product: .staticLibrary,
                                                              organizationName: organizationName,
                                                              deploymentTarget: deploymentTarget,
-                                                             dependencies: dependencies + [.target(domainLayerTarget.product)] + [.target(dataLayerTarget.product)],
+                                                             dependencies: [.target(domainLayerTarget.product)] + [.target(dataLayerTarget.product)],
                                                              sources: ["Presentation/**"],
-                                                             resources: resources,
+                                                             resources: nil,
                                                              infoPlist: infoPlist)
         
         let productTarget = Target.createWithTests(name: name,
-                                                   product: product,
+                                                   product: .framework,
                                                    organizationName: organizationName,
                                                    deploymentTarget: deploymentTarget,
-                                                   dependencies: dependencies + [.target(presentationLayerTarget.product), .target(domainLayerTarget.product), .target(dataLayerTarget.product)],
-                                                   sources: nil,
-                                                   resources: nil,
+                                                   dependencies: [.target(presentationLayerTarget.product), .target(domainLayerTarget.product), .target(dataLayerTarget.product)],
+                                                   sources: ["Home/**"],
+                                                   resources: resources,
                                                    infoPlist: infoPlist)
         
         let targets = productTarget.targets + domainLayerTarget.targets + dataLayerTarget.targets + presentationLayerTarget.targets
+        
+//        let targets = domainLayerTarget.targets + dataLayerTarget.targets + presentationLayerTarget.targets
         
         return Project(
             name: name,
@@ -132,6 +132,30 @@ struct TargetWithTest {
 }
 
 extension Target {
+    static func create(
+        name: String,
+        platform: Platform = .iOS,
+        product: Product,
+        organizationName: String,
+        deploymentTarget: DeploymentTarget?,
+        dependencies: [TargetDependency],
+        sources: SourceFilesList?,
+        resources: ResourceFileElements?,
+        infoPlist: InfoPlist
+    ) -> Target {
+        return Target(
+            name: name, // 타겟 이름
+            platform: platform, // 플랫폼(iOS, MacOS...)
+            product: product, // app, framework, staticLibrary...
+            bundleId: "\(organizationName).\(name)", // 번들 아이디
+            deploymentTarget: deploymentTarget,
+            infoPlist: infoPlist,
+            sources: sources, // 소스 경로(프로젝트 루트 기반)
+            resources: resources, // 리소스 경로(프로젝트 루트 기반)
+            dependencies: dependencies // 의존성
+        )
+    }
+    
     static func createWithTests(
         name: String,
         platform: Platform = .iOS,
@@ -143,27 +167,27 @@ extension Target {
         resources: ResourceFileElements?,
         infoPlist: InfoPlist
     ) -> TargetWithTest {
-        let productTarget = Target(
-            name: name, // 타겟 이름
-            platform: platform, // 플랫폼(iOS, MacOS...)
-            product: product, // app, framework, staticLibrary...
-            bundleId: "\(organizationName).\(name)", // 번들 아이디
+        let productTarget = Target.create(
+            name: name,
+            platform: platform,
+            product: product,
+            organizationName: organizationName,
             deploymentTarget: deploymentTarget,
-            infoPlist: infoPlist,
-            sources: sources, // 소스 경로(프로젝트 루트 기반)
-            resources: resources, // 리소스 경로(프로젝트 루트 기반)
-            dependencies: dependencies // 의존성
+            dependencies: dependencies,
+            sources: sources,
+            resources: resources,
+            infoPlist: infoPlist
         )
         
-        let testTarget = Target(
+        let testTarget = Target.create(
             name: "\(name)Tests",
-            platform: platform,
             product: .unitTests,
-            bundleId: "\(organizationName).\(name)Tests",
+            organizationName: organizationName,
             deploymentTarget: deploymentTarget,
-            infoPlist: .default,
+            dependencies: [.target(name: name)],
             sources: ["Tests/**"],
-            dependencies: [.target(name: name)]
+            resources: nil,
+            infoPlist: .default
         )
         
         return TargetWithTest(product: productTarget, test: testTarget)
@@ -171,7 +195,7 @@ extension Target {
 }
 
 extension Scheme {
-    static func makeScheme(target: ConfigurationName, name: String) -> Scheme {
+    static func create(target: ConfigurationName, name: String) -> Scheme {
         return Scheme(
             name: name,
             shared: true,

@@ -6,6 +6,9 @@
 //
 
 import UIKit
+import SwiftUI
+import UserInterfaceKit
+import Home
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -14,12 +17,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let scene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: scene)
-        let viewContrller = UIViewController()
-        viewContrller.view.backgroundColor = .green
-        window.rootViewController = viewContrller
+        let view = Home.module()
+        let viewController = UIHostingController(rootView: view)
+        window.rootViewController = viewController
         window.makeKeyAndVisible()
         self.window = window
-        
+        print(UserInterfaceKit().name)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {}

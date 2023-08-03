@@ -10,7 +10,7 @@ import ProjectDescription
 let workspace = Workspace(
     name: "TuistExample", // workspace 이름
     projects: [ // 프로젝트 경로
-        "TuistExampleApp"
+        "Projects/TuistExampleApp"
     ],
     schemes: [], //스킴
     fileHeaderTemplate: nil, // 파일 헤더 ex)Created by yjc ...

@@ -10,6 +10,11 @@ import ProjectDescriptionHelpers
 
 let project = Project.createCleanArchitecture(
     name: "Home",
-    product: .staticFramework,
+    dependencies: [
+        .project(
+            target: "UserInterfaceKit",
+            path: .relativeToRoot("Projects/UserInterface/UserInterfaceKit")
+        ),
+    ],
     resources: ["Resources/**"]
 )
