@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import UserInterfaceKit
+//import UserInterfaceKit
 
 public struct HomeView: View {
     private let viewModel: HomeViewModel
@@ -15,6 +15,7 @@ public struct HomeView: View {
     }
     
     public var body: some View {
-        Text("Hello \(UserInterfaceKit().name) -> Home")
+//        Text("Hello \(UserInterfaceKit().name) -> Home")
+        Text("Hello Home")
     }
 }

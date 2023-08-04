@@ -85,7 +85,9 @@ extension Project {
                                                      product: .staticLibrary,
                                                      organizationName: organizationName,
                                                      deploymentTarget: deploymentTarget,
-                                                     dependencies: [.target(domainLayerTarget.product)],
+                                                     dependencies: [
+                                                        .target(domainLayerTarget.product),
+                                                     ],
                                                      sources: ["Data/**"],
                                                      resources: nil,
                                                      infoPlist: infoPlist)
@@ -94,7 +96,9 @@ extension Project {
                                                              product: .staticLibrary,
                                                              organizationName: organizationName,
                                                              deploymentTarget: deploymentTarget,
-                                                             dependencies: [.target(domainLayerTarget.product)] + [.target(dataLayerTarget.product)],
+                                                             dependencies: [
+                                                                .target(dataLayerTarget.product)
+                                                             ],
                                                              sources: ["Presentation/**"],
                                                              resources: nil,
                                                              infoPlist: infoPlist)
@@ -103,14 +107,14 @@ extension Project {
                                                    product: .framework,
                                                    organizationName: organizationName,
                                                    deploymentTarget: deploymentTarget,
-                                                   dependencies: [.target(presentationLayerTarget.product), .target(domainLayerTarget.product), .target(dataLayerTarget.product)],
+                                                   dependencies: [
+                                                    .target(presentationLayerTarget.product),
+                                                   ] + dependencies,
                                                    sources: ["Home/**"],
                                                    resources: resources,
                                                    infoPlist: infoPlist)
         
         let targets = productTarget.targets + domainLayerTarget.targets + dataLayerTarget.targets + presentationLayerTarget.targets
-        
-//        let targets = domainLayerTarget.targets + dataLayerTarget.targets + presentationLayerTarget.targets
         
         return Project(
             name: name,

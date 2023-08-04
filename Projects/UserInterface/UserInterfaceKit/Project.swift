@@ -12,7 +12,10 @@ let project = Project.create(
     name: "UserInterfaceKit",
     product: .framework,
     dependencies: [
-        .project(target: "Home", path: .relativeToRoot("Projects/UserInterface/Home")),
+        .project(
+            target: "Home",
+            path: .relativeToRoot("Projects/UserInterface/Home")
+        ),
     ],
     resources: ["Resources/**"]
 )

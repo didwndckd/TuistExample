@@ -7,6 +7,7 @@
 
 import Foundation
 import HomeDomain
+import HomeData
 
 public final class HomeViewModel {
     private let useCase: HomeUseCase

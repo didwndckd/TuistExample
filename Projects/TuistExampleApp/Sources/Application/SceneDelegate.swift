@@ -7,7 +7,6 @@
 
 import UIKit
 import SwiftUI
-import UserInterfaceKit
 import Home
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -22,7 +21,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = viewController
         window.makeKeyAndVisible()
         self.window = window
-        print(UserInterfaceKit().name)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {}
