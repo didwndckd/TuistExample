@@ -94,7 +94,7 @@ extension Project {
                                                              product: .staticLibrary,
                                                              organizationName: organizationName,
                                                              deploymentTarget: deploymentTarget,
-                                                             dependencies: [.target(domainLayerTarget.product)] + [.target(dataLayerTarget.product)],
+                                                             dependencies: [.target(dataLayerTarget.product)],
                                                              sources: ["Presentation/**"],
                                                              resources: nil,
                                                              infoPlist: infoPlist)
@@ -109,8 +109,6 @@ extension Project {
                                                    infoPlist: infoPlist)
         
         let targets = productTarget.targets + domainLayerTarget.targets + dataLayerTarget.targets + presentationLayerTarget.targets
-        
-//        let targets = domainLayerTarget.targets + dataLayerTarget.targets + presentationLayerTarget.targets
         
         return Project(
             name: name,

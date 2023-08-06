@@ -6,7 +6,8 @@
 //
 
 import SwiftUI
-import UserInterfaceKit
+import HomeDomain
+import HomeData
 
 public struct HomeView: View {
     private let viewModel: HomeViewModel
@@ -15,6 +16,25 @@ public struct HomeView: View {
     }
     
     public var body: some View {
-        Text("Hello \(UserInterfaceKit().name) -> Home")
+        VStack {
+            Text("Hello Home")
+            Image("gorilla")
+                .resizable()
+                .frame(height: 100)
+                .background(.green)
+            Image("gorilla2")
+                .resizable()
+                .frame(height: 100)
+                .background(.pink)
+        }
+    }
+}
+
+struct HomeView__Previews: PreviewProvider {
+    static var previews: some View {
+        let repo = DefaultHomeRepository()
+        let useCase = DefaultHomeUseCase(repository: repo)
+        let viewModel = HomeViewModel(useCase: useCase)
+        return HomeView(viewModel: viewModel)
     }
 }
