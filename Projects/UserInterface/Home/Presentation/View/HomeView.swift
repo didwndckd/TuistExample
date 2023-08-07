@@ -8,6 +8,7 @@
 import SwiftUI
 import HomeDomain
 import HomeData
+import ResourceKit
 
 public struct HomeView: View {
     private let viewModel: HomeViewModel
@@ -22,7 +23,10 @@ public struct HomeView: View {
                 .resizable()
                 .frame(height: 100)
                 .background(.green)
-            Image("gorilla2")
+            
+            Image(uiImage: ResourceKitAsset
+                .gorilla3
+                .image)
                 .resizable()
                 .frame(height: 100)
                 .background(.pink)
@@ -30,9 +34,9 @@ public struct HomeView: View {
     }
 }
 
-struct HomeView__Previews: PreviewProvider {
+struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let repo = DefaultHomeRepository()
+        let repo = RemoteHomeRepository()
         let useCase = DefaultHomeUseCase(repository: repo)
         let viewModel = HomeViewModel(useCase: useCase)
         return HomeView(viewModel: viewModel)

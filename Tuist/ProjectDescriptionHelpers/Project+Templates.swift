@@ -55,7 +55,7 @@ extension Project {
     public static func createCleanArchitecture(
         name: String,
         platform: Platform = .iOS,
-//        product: Product,
+        product: Product = .framework,
         organizationName: String = "com.didwndckd",
         packages: [Package] = [],
         deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
@@ -76,7 +76,12 @@ extension Project {
                                                        product: .staticLibrary,
                                                        organizationName: organizationName,
                                                        deploymentTarget: deploymentTarget,
-                                                       dependencies: [],
+                                                       dependencies: [
+                                                        .project(
+                                                            target: "DomainLayerDependency",
+                                                            path: .relativeToRoot("Projects/UserInterface/DomainLayerDependency")
+                                                        )
+                                                       ] + dependencies,
                                                        sources: ["Domain/**"],
                                                        resources: nil,
                                                        infoPlist: infoPlist)
@@ -85,27 +90,39 @@ extension Project {
                                                      product: .staticLibrary,
                                                      organizationName: organizationName,
                                                      deploymentTarget: deploymentTarget,
-                                                     dependencies: [.target(domainLayerTarget.product)],
+                                                     dependencies: [
+                                                        .target(domainLayerTarget.product),
+                                                        .project(
+                                                            target: "DataLayerDependency",
+                                                            path: .relativeToRoot("Projects/UserInterface/DataLayerDependency")
+                                                        )
+                                                     ],
                                                      sources: ["Data/**"],
                                                      resources: nil,
                                                      infoPlist: infoPlist)
         
         let presentationLayerTarget = Target.createWithTests(name: "\(name)Presentation",
-                                                             product: .staticLibrary,
+                                                             product: .framework,
                                                              organizationName: organizationName,
                                                              deploymentTarget: deploymentTarget,
-                                                             dependencies: [.target(dataLayerTarget.product)],
+                                                             dependencies: [
+                                                                .target(dataLayerTarget.product),
+                                                                .project(
+                                                                    target: "PresentationLayerDependency",
+                                                                    path: .relativeToRoot("Projects/UserInterface/PresentationLayerDependency")
+                                                                )
+                                                             ],
                                                              sources: ["Presentation/**"],
-                                                             resources: nil,
+                                                             resources: resources,
                                                              infoPlist: infoPlist)
         
         let productTarget = Target.createWithTests(name: name,
-                                                   product: .framework,
+                                                   product: product,
                                                    organizationName: organizationName,
                                                    deploymentTarget: deploymentTarget,
-                                                   dependencies: [.target(presentationLayerTarget.product), .target(domainLayerTarget.product), .target(dataLayerTarget.product)],
+                                                   dependencies: [.target(presentationLayerTarget.product)],
                                                    sources: ["Home/**"],
-                                                   resources: resources,
+                                                   resources: nil,
                                                    infoPlist: infoPlist)
         
         let targets = productTarget.targets + domainLayerTarget.targets + dataLayerTarget.targets + presentationLayerTarget.targets

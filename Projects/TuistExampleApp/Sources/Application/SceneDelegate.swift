@@ -7,8 +7,9 @@
 
 import UIKit
 import SwiftUI
-import UserInterfaceKit
-import Home
+import HomePresentation
+import HomeDomain
+import HomeData
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -17,12 +18,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let scene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: scene)
-        let view = Home.module()
+        let repository = RemoteHomeRepository()
+        let useCase = DefaultHomeUseCase(repository: repository)
+        let viewModel = HomeViewModel(useCase: useCase)
+        let view = HomeView(viewModel: viewModel)
         let viewController = UIHostingController(rootView: view)
         window.rootViewController = viewController
         window.makeKeyAndVisible()
         self.window = window
-        print(UserInterfaceKit().name)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {}
