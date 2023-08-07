@@ -2,6 +2,15 @@
 
 > Tuist를 사용한 모듈화 샘플
 
+## How to use
+
+``` shell
+$ tuist fetch
+$ tuist generate
+```
+
+
+
 ## 모듈화 할 구조
 
 간단한 구조로 알아보겠음.
