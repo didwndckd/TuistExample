@@ -15,22 +15,26 @@ import UIKit
 import SnapKit
 import Moya
 
-enum TestAPI: TargetType {
-    var baseURL: URL { URL(string: "https://www.google.com")! }
+public enum TestAPI: TargetType {
+    case test
     
-    var path: String { "" }
+    public var baseURL: URL { URL(string: "https://www.google.com")! }
     
-    var method: Moya.Method { .get }
+    public var path: String { "" }
     
-    var task: Moya.Task { .requestParameters(parameters: [:], encoding: URLEncoding.default) }
+    public var method: Moya.Method { .get }
     
-    var headers: [String : String]? { nil }
+    public var task: Moya.Task { .requestParameters(parameters: [:], encoding: URLEncoding.default) }
+    
+    public var headers: [String : String]? { nil }
 }
 
-struct SnapKitTest {
-    let view = UIView()
-    
-    func test() {
+public struct SnapKitTest {
+    public let view = UIView()
+    public init() {}
+    public func test() {
+        let superView = UIView()
+        superView.addSubview(view)
         view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
         }

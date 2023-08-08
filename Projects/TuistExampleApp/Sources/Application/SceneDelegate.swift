@@ -10,6 +10,7 @@ import SwiftUI
 import HomePresentation
 import HomeDomain
 import HomeData
+import Home
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -26,6 +27,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = viewController
         window.makeKeyAndVisible()
         self.window = window
+        
+        print(TestAPI.test.baseURL)
+        print(SnapKitTest().view)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {}
