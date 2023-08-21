@@ -15,6 +15,10 @@ let project = Project.create(
         .project(
             target: "ResourceKit",
             path: .relativeToRoot("Projects/ResourceKit")
+        ),
+        .project(
+            target: "DataLayerDependency",
+            path: .relativeToRoot("Projects/UserInterface/DataLayerDependency")
         )
     ]
 )

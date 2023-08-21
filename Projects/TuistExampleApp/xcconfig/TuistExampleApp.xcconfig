@@ -1,0 +1,14 @@
+//
+//  TuistExampleApp.xcconfig
+//  Manifests
+//
+//  Created by yjc on 2023/08/21.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+APP_VERSION = 1.1.1
+APP_BUILD = 0
+DEVELOPMENT_TEAM = 3S767N4AG9
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym

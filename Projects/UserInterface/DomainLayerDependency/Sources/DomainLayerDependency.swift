@@ -7,4 +7,7 @@
 
 import Foundation
 
-struct DomainLayerDependency {}
+public struct DomainLayerDependency {
+    public init() {
+    }
+}

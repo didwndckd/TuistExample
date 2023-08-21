@@ -12,15 +12,17 @@ extension Project {
         product: Product,
         organizationName: String = "com.didwndckd",
         packages: [Package] = [],
-        deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
+        deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
+        scripts: [TargetScript] = [],
         dependencies: [TargetDependency] = [],
         sources: SourceFilesList = ["Sources/**"],
         resources: ResourceFileElements? = nil,
-        infoPlist: InfoPlist = .default
+        infoPlist: InfoPlist = .default,
+        settings: Settings? = nil
     ) -> Project {
         // 프로젝트 세팅
-        let settings = Settings.settings(
-            base: [:], // Build Settings
+        let settings = settings ?? Settings.settings(
+            base: [:],
             configurations: [ // Configurations
                 .debug(name: .debug),
                 .release(name: .release)
@@ -34,6 +36,7 @@ extension Project {
             product: product,
             organizationName: organizationName,
             deploymentTarget: deploymentTarget,
+            scripts: scripts,
             dependencies: dependencies,
             sources: sources,
             resources: resources,
@@ -58,7 +61,7 @@ extension Project {
         product: Product = .framework,
         organizationName: String = "com.didwndckd",
         packages: [Package] = [],
-        deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
+        deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
         dependencies: [TargetDependency] = [],
         resources: ResourceFileElements? = nil,
         infoPlist: InfoPlist = .default
@@ -92,6 +95,7 @@ extension Project {
                                                      deploymentTarget: deploymentTarget,
                                                      dependencies: [
                                                         .target(domainLayerTarget.product),
+                                                        
                                                         .project(
                                                             target: "DataLayerDependency",
                                                             path: .relativeToRoot("Projects/UserInterface/DataLayerDependency")
@@ -153,11 +157,16 @@ extension Target {
         product: Product,
         organizationName: String,
         deploymentTarget: DeploymentTarget?,
+        scripts: [TargetScript] = [],
         dependencies: [TargetDependency],
         sources: SourceFilesList?,
         resources: ResourceFileElements?,
         infoPlist: InfoPlist
     ) -> Target {
+        var scripts = scripts
+        scripts.insert(.pre(script: "echo \"😂TEST ->  \(name) START\"", name: "start"), at: 0)
+        scripts.append(.post(script: "echo \"😂TEST ->  \(name) END\"", name: "end"))
+        
         return Target(
             name: name, // 타겟 이름
             platform: platform, // 플랫폼(iOS, MacOS...)
@@ -167,7 +176,8 @@ extension Target {
             infoPlist: infoPlist,
             sources: sources, // 소스 경로(프로젝트 루트 기반)
             resources: resources, // 리소스 경로(프로젝트 루트 기반)
-            dependencies: dependencies // 의존성
+            scripts: scripts,
+            dependencies: dependencies
         )
     }
     
@@ -177,6 +187,7 @@ extension Target {
         product: Product,
         organizationName: String,
         deploymentTarget: DeploymentTarget?,
+        scripts: [TargetScript] = [],
         dependencies: [TargetDependency],
         sources: SourceFilesList?,
         resources: ResourceFileElements?,
@@ -188,6 +199,7 @@ extension Target {
             product: product,
             organizationName: organizationName,
             deploymentTarget: deploymentTarget,
+            scripts: scripts,
             dependencies: dependencies,
             sources: sources,
             resources: resources,

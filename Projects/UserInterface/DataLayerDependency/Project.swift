@@ -10,5 +10,11 @@ import ProjectDescriptionHelpers
 
 let project = Project.create(
     name: "DataLayerDependency",
-    product: .framework
+    product: .framework,
+    dependencies: [
+        .project(
+            target: "DomainLayerDependency",
+            path: .relativeToRoot("Projects/UserInterface/DomainLayerDependency")
+        )
+    ]
 )

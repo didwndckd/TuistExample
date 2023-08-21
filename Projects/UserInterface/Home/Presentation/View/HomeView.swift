@@ -18,18 +18,21 @@ public struct HomeView: View {
     
     public var body: some View {
         VStack {
+            Button("Crash") {
+                fatalError("Test")
+            }
             Text("Hello Home")
             Image("gorilla")
                 .resizable()
                 .frame(height: 100)
-                .background(.green)
+//                .background(.green)
             
             Image(uiImage: ResourceKitAsset
                 .gorilla3
                 .image)
                 .resizable()
                 .frame(height: 100)
-                .background(.pink)
+//                .background(.pink)
         }
     }
 }

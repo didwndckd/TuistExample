@@ -1,0 +1,13 @@
+"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+echo "😂TEST -> ${BUILD_DIR%/Build/*}"
+echo "😂TEST -> ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"
+echo "😂TEST -> ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}"
+echo "😂TEST -> ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist"
+echo "😂TEST -> ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleService-Info-Dev.plist"
+echo "😂TEST -> ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}"
+
+echo "😂TEST 2 -> ${DWARF_DSYM_FOLDER_PATH} -> ${DWARF_DSYM_FILE_NAME}"
+echo "😂TEST 2 -> ${DWARF_DSYM_FOLDER_PATH} -> ${DWARF_DSYM_FILE_NAME} -> Contents/Resources/DWARF -> ${PRODUCT_NAME}"
+echo "😂TEST 2 -> ${DWARF_DSYM_FOLDER_PATH} -> ${DWARF_DSYM_FILE_NAME} -> Contents/Info.plist"
+echo "😂TEST 2 -> ${BUILT_PRODUCTS_DIR} -> ${UNLOCALIZED_RESOURCES_FOLDER_PATH} -> GoogleService-Info-Dev.plist"
+echo "😂TEST 2 -> ${BUILT_PRODUCTS_DIR} -> ${EXECUTABLE_PATH}"

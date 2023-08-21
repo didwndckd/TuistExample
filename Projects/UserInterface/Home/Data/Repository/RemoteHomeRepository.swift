@@ -9,5 +9,6 @@ import Foundation
 import HomeDomain
 
 public struct RemoteHomeRepository: HomeRepository {
-    public init() {}
+    public init() {
+    }
 }

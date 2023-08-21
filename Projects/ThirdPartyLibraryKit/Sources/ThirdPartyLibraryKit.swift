@@ -7,4 +7,5 @@
 
 import Foundation
 
-public struct ThirdPartyLibraryKit {}
+public struct ThirdPartyLibraryKit {
+}

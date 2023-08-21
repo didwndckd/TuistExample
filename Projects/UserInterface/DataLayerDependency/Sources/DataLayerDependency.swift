@@ -7,4 +7,7 @@
 
 import Foundation
 
-struct DataLayerDependency {}
+struct DataLayerDependency {
+    init() {
+    }
+}
